@@ -1,0 +1,55 @@
+# Git
+.git
+.gitignore
+
+# Docker 
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Documentation
+README.md
+*.md
+docs/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+#Build artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+bin/
+dist/
+
+# Test files
+*_test.go 
+test/
+coverage.txt
+
+# Temporary files
+tmp/
+temp/
+*.log
+
+# Dependencies (will be downloaded during build)
+vendor/
+
+
+# go project specifically
+*.out
+go.work
+go.work.sum
