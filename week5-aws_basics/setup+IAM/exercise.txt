@@ -1,0 +1,75 @@
+requirements: 
+	3 devs
+	1 Devops
+	1 data analyst
+	1 CI/CD pipeline
+
+environment:
+	dev
+	prod
+
+thoughts: 
+	there will be 1 account whose credentials are the ceo's email and password 
+		stored in a vault, with MFA enabled
+	from the root acount create an admin user with administrator access
+	this admin will be used to create users, roles, groups and policies
+	
+	admin account tasks:
+		create developer group
+		attach policies such as full access to dev environment, read only access to staging and prod environment, access to create test resources, cannot touch production environment
+		
+		create DeployementAccess policy (CI/CD pipeline)
+		not very sure to what specific access this will have but it get the production binary to deploy and it will also have access/manage to the secrets
+
+		create Readonly access policy (data analyst)
+		this will have read-only access for s3 from the production environment
+
+		create adminstrator policy
+		this will have full access to dev and prod environment, secrets management, s3 full access for dev and prod resources, infra structure management
+
+
+
+Actual IAM Structure:
+	Groups:
+		Developers(3 users)
+			Policy: access to dev environment and production logs
+		DevOps(1 user)
+			Policy: access to dev and prod env, Near-admin access (can't delete prod data0
+		Data Team(1 user)
+			Policy: s3 + athena read-only
+		Automation(1 user)
+			Policy: Deployment action only
+
+
+policy for data team json
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"s3:GetObject",
+				"s3:ListBucket"
+				],
+			"Resource": [
+				"arn:aws:s3:::analytics-*",
+				"arn:aws:s3:::analytics-*/*"
+				]
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"athena:GetQueryExecution",
+				"athena:GetQueryResult",
+				"athena:StartQueryExecution"
+			],
+			"Resource": "*"
+		}
+	]
+}
+
+Incident Response:
+	Disable developers access keys
+	check aws cost explorer, cloudtrail for anomalies
+	change root account password, verify mfa device, and verify recent activities
+
