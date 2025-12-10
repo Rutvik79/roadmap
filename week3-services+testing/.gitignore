@@ -1,1 +1,5 @@
 .env
+*.log
+/tmp/
+*.pem
+.DS_Store
