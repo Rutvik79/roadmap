@@ -34,6 +34,7 @@ import (
 func main() {
 	fmt.Println("Gin Framework Basics")
 	err := godotenv.Load()
+	port := os.Getenv("PORT")
 	if err != nil {
 		log.Fatalf("Error Loading .env file")
 	}
@@ -137,5 +138,5 @@ func main() {
 		}
 	}
 
-	router.Run("0.0.0.0:8080")
+	router.Run("0.0.0.0:" + port)
 }
