@@ -18,8 +18,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"week3_services_testing/api/internal/handlers"
 	"week3_services_testing/api/internal/middleware"
+	"week3_services_testing/api/internal/s3helper"
 
 	"net/http"
 
@@ -35,6 +37,20 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error Loading .env file")
 	}
+
+	bucketName := os.Getenv("S3_BUCKET_NAME")
+	if bucketName == "" {
+		log.Fatal("S3_BUCKET_NAME environment variable is required")
+	}
+
+	// Initialize s3 client
+	s3Client, err := s3helper.NewS3Client(bucketName)
+	if err != nil {
+		log.Fatalf("Failed to create S3 client: %v", err)
+	}
+
+	// Initialize handlers
+	fileHandler := handlers.NewFileHandler(s3Client)
 
 	// Create a Gin Router with Default middleware
 	router := gin.Default()
@@ -94,6 +110,13 @@ func main() {
 			auth.POST("/login", authhandler.Login)
 		}
 
+		files := api.Group("/files")
+		{
+			files.POST("/upload", fileHandler.UploadFile)
+			files.GET("/list", fileHandler.ListFiles)
+			files.GET("/download/*key", fileHandler.DownloadFile)
+			files.DELETE("/*key", fileHandler.DeleteFile)
+		}
 		// Protected Routes
 		protected := api.Group("")
 		protected.Use(middleware.AuthRequired())
