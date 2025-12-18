@@ -77,6 +77,7 @@ func (h *FileHandler) UploadFile(c *gin.Context) {
 	)
 
 	// Upload to S3
+	fmt.Println("File key", fileKey, "file, contentType", contentType)
 	err = h.s3Client.UploadFile(c.Request.Context(), fileKey, file, contentType)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
