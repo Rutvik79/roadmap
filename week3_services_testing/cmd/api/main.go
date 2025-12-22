@@ -112,6 +112,7 @@ func main() {
 		}
 
 		files := api.Group("/files")
+		files.Use(middleware.AuthRequired())
 		{
 			files.POST("/upload", fileHandler.UploadFile)
 			files.GET("/list", fileHandler.ListFiles)
